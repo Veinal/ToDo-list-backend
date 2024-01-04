@@ -1,7 +1,20 @@
 const StarSchema=require('../model/StarredSchema')
+const Insert=async(req,res)=>{
+    try{
+        const {notes_id,date,status}=req.body;
+        const data=await new StarSchema({date,status,notes_id:notes_id})
+        const savedData=data.save()
+        console.log("insertion success")
+        res.send({"insertion successful":true,savedData})
+    }
+    catch(err){
+        console.error("some error occured"+err);
+        res.status(500).json("Some internal error!!")
+    }
+}
 const View=async(req,res)=>{
     try{
-        const data=await StarSchema.find()
+        const data=await StarSchema.find().populate("notes_id")
         console.log(data)
         res.json(data)
     }
@@ -28,4 +41,4 @@ const Delete=async(req,res)=>{
         res.status(500).json("some internal error!!")
     }
 }
-module.exports={View,Delete}
+module.exports={Insert,View,Delete}

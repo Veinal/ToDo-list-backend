@@ -1,88 +1,98 @@
-const NotesSchema =require('../model/NotesSchema')
-const Insert = async(req,res)=>{
-    try{
-        const {name,description,date,status}=req.body;
-    const data =await new NotesSchema({name,description,date,status})
-    const savedData=await data.save()
-    console.log("insertion success")
-    res.send({"insertion successful":true,savedData})
+const NotesSchema = require('../model/NotesSchema')
+const DelSchema = require('../model/DeletedSchema') //to delete the note and store it in deleted collection
+
+const Insert = async (req, res) => {
+    try {
+        const { name, description, date, status } = req.body;
+        const data = await new NotesSchema({ name, description, date, status })
+        const savedData = await data.save()
+        console.log("insertion success")
+        res.send({ "insertion successful": true, savedData })
     }
-    catch(error){
-        console.error("some error occured"+error);
+    catch (error) {
+        console.error("some error occured" + error);
         res.status(500).json("some internal error!!")
     }
 }
 
-const View=async(req,res)=>{
-    try{
-        const data=await NotesSchema.find()
+const View = async (req, res) => {
+    try {
+        const data = await NotesSchema.find()
         console.log(data)
         res.json(data)
     }
-    catch(error){
-        console.error("some error occured"+error);
+    catch (error) {
+        console.error("some error occured" + error);
         res.status(500).json("some internal error!!")
     }
 }
 
-const SingleView=async(req,res)=>{
-    try{
-        const data=await NotesSchema.findById(req.params.id)
-        if(!data){
+const SingleView = async (req, res) => {
+    try {
+        const data = await NotesSchema.findById(req.params.id)
+        if (!data) {
             console.log("data not found with this id")
             return res.status(404).json("data does not exist with this id")
-        }else{
+        } else {
             console.log(data)
             res.json(data)
         }
     }
-    catch(error){
-        console.error("some error occured"+error);
+    catch (error) {
+        console.error("some error occured" + error);
         res.status(500).json("some internal error!!")
     }
 }
 
-const Delete=async(req,res)=>{
-    try{
-        let data=await NotesSchema.findById(req.params.id)
-        if(!data){
+const Delete = async (req, res) => {
+    try {
+        let data = await NotesSchema.findById(req.params.id)
+        if (!data) {
             console.log("data not found with this id")
             return res.status(404).json("data does not exist with this ID")
         }
-        else{
-            data=await NotesSchema.findByIdAndDelete(req.params.id)
+        else {
+            const deletedNote = new DelSchema({
+                originalId: data._id,
+                name: data.name,
+                description: data.description,
+                date: data.date,
+                status: data.status
+            })
+            await deletedNote.save()
+            data = await NotesSchema.findByIdAndDelete(req.params.id)
             console.log("Data deleted successfully")
-            res.json({"Success":true,"Deleted Data":data})
+            res.json({ "Success": true, "Deleted Data": data })
         }
     }
-    catch(error){
-        console.error("some error occured"+error);
+    catch (error) {
+        console.error("some error occured" + error);
         res.status(500).json("some internal error!!")
     }
 }
 
-const Update=async(req,res)=>{
-    const {name,description,date,status}=req.body
-    try{
-        const newData={}
-        if(name){newData.name=name}
-        if(description){newData.description=description}
-        if(date){newData.date=date}
-        if(status){newData.status=status}
+const Update = async (req, res) => {
+    const { name, description, date, status } = req.body
+    try {
+        const newData = {}
+        if (name) { newData.name = name }
+        if (description) { newData.description = description }
+        if (date) { newData.date = date }
+        if (status) { newData.status = status }
 
-        let data =await NotesSchema.findById(req.params.id)
-        if(!data){
+        let data = await NotesSchema.findById(req.params.id)
+        if (!data) {
             console.log("Data not found with this id")
             return res.status(404).json("Data does not exist with this ID")
-        }else{
-            data = await NotesSchema.findByIdAndUpdate(req.params.id,{$set:newData})
-            console.log("Updated data"+data)
-            res.json({data})
+        } else {
+            data = await NotesSchema.findByIdAndUpdate(req.params.id, { $set: newData })
+            console.log("Updated data" + data)
+            res.json({ data })
         }
     }
-    catch(error){
-        console.error("some error occured"+error);
+    catch (error) {
+        console.error("some error occured" + error);
         res.status(500).json("some internal error!!")
     }
 }
-module.exports={Insert,View,SingleView,Delete,Update}
+module.exports = { Insert, View, SingleView, Delete, Update }

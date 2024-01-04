@@ -1,8 +1,9 @@
 const express=require('express')
 const router=express.Router()
 
-const {View,Delete}= require('../controller/Archived')
+const {Insert,View,Delete}= require('../controller/Archived')
+router.post('/insert',Insert)
 router.get('/view',View)
-router.delete('/delete',Delete)
+router.delete('/delete/:id',Delete)
 
 module.exports=router

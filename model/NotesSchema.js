@@ -13,7 +13,8 @@ const NotesSchema = new Schema({
         default: Date.now
     },
     status: {
-        type: String
+        type: String,
+        default:'unarchived'
     }
 })
 module.exports=mongoose.model("Notes",NotesSchema)

@@ -1,8 +1,9 @@
 const express=require('express')
 const router=express.Router()
 
-const {View,Delete}= require('../controller/Deleted')
+const {View,Delete, Restore}= require('../controller/Deleted')
 router.get('/view',View)
-router.delete('/delete',Delete)
+router.delete('/delete/:id',Delete)
+router.delete('/restore/:id',Restore)
 
 module.exports=router
