@@ -4,7 +4,7 @@ const DelSchema = require('../model/DeletedSchema') //to delete the note and sto
 const Insert = async (req, res) => {
     try {
         const { name, description, date, status } = req.body;
-        const data = await new NotesSchema({ name, description, date, status })
+        const data = await new NotesSchema({ name, user_id: req.user, description, date, status })
         const savedData = await data.save()
         console.log("insertion success")
         res.send({ "insertion successful": true, savedData })
@@ -17,7 +17,7 @@ const Insert = async (req, res) => {
 
 const View = async (req, res) => {
     try {
-        const data = await NotesSchema.find()
+        const data = await NotesSchema.find({ user_id: req.user }).populate("user_id")
         console.log(data)
         res.json(data)
     }
@@ -52,14 +52,6 @@ const Delete = async (req, res) => {
             return res.status(404).json("data does not exist with this ID")
         }
         else {
-            const deletedNote = new DelSchema({
-                originalId: data._id,
-                name: data.name,
-                description: data.description,
-                date: data.date,
-                status: data.status
-            })
-            await deletedNote.save()
             data = await NotesSchema.findByIdAndDelete(req.params.id)
             console.log("Data deleted successfully")
             res.json({ "Success": true, "Deleted Data": data })

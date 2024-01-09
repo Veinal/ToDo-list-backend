@@ -1,12 +1,13 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose;
 const DelSchema = new Schema({
-    name: {
-        type: String,
-        require: true
+    user_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"user"
     },
-    description: {
-        type: String
+    notes_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Notes"
     },
     date: {
         type: Date,

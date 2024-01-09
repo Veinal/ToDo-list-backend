@@ -6,12 +6,12 @@ const JWT_SECRET = "todouser"
 const Register = async (req, res) => {
     try {
         const { userName, email, password } = req.body;
-        const picture = req.file.filename;
+        // const picture = req.file.filename;
         const salt = await bcrypt.genSalt(10)
         console.log()
         const secpass = await bcrypt.hash(password, salt)
 
-        const data = await new UserSchema({ userName, email, password: secpass, picture })
+        const data = await new UserSchema({ userName, email, password: secpass})
         const savedData = await data.save()
         console.log("registration successful")
         res.send({ "registered successfully": true, savedData })

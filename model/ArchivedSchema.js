@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose;
 const ArchSchema = new Schema({
+    user_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"user"
+    },
     notes_id:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Notes"
