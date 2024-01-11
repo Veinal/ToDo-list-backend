@@ -1,8 +1,8 @@
 const ArchSchema=require('../model/ArchivedSchema')
 const Insert=async(req,res)=>{
     try{
-        const {notes_id,date,status}=req.body;
-        const data=await new ArchSchema({date,status,notes_id:notes_id})
+        const {notes_id,user_id,date,status}=req.body;
+        const data=await new ArchSchema({date,status,notes_id:notes_id,user_id:user_id})
         const savedData=data.save()
         console.log("insertion success")
         res.send({"insertion successful":true,savedData})
@@ -14,7 +14,7 @@ const Insert=async(req,res)=>{
 }
 const View=async(req,res)=>{
     try{
-        const data=await ArchSchema.find().populate("notes_id")
+        const data=await ArchSchema.find({ user_id: req.user }).populate(["notes_id","user_id"])
         console.log(data)
         res.json(data)
     }
